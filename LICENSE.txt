@@ -1,4 +1,9 @@
 
+PocketSDR-AFS is based on PocketSDR (https://github.com/tomojitakasu/PocketSDR).
+
+Additional Copyright (c) 2025, Takuji Ebinuma, All rights reserved.
+
+--------------------------------------------------------------------------------
 The PocketSDR package is distributed under the following BSD 2-clause license.
 Users are permitted to develop, produce or sell their own non-commercial or
 commercial products utilizing, linking or including PocketSDR as long as they
