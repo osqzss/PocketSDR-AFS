@@ -63,3 +63,7 @@ The `pocket_trk.sh` script in `app/pocket_trk` provides example command-line ins
 ```sh
 ./pocket_trk.sh
 ```
+
+### Notes
+
+- For testing purposes, the center frequency of the LANS AFS is set to 1575.42MHz. Although the actual LANS AFS is broadcast in S-band, this configuration allows the use of the FE2CH frontend device for real-time testing.
