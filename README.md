@@ -35,7 +35,7 @@ chmod +x clone_lib.sh
 ```sh
 cd build
 make
-sudo make install
+make install
 ```
 
 ### 5. Build the `pocket_trk` Executable
@@ -55,13 +55,13 @@ The `pocket_trk.sh` script in `app/pocket_trk` provides example command-line ins
 ### Offline Testing Example
 
 ```sh
-./pocket_trk.sh afssim_ip2.bin
+sudo ./pocket_trk.sh afssim_ip2.bin
 ```
 
 ### Real-time Testing Example (with FE2CH frontend)
 
 ```sh
-./pocket_trk.sh
+sudo ./pocket_trk.sh
 ```
 
 ## Notes
