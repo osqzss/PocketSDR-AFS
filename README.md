@@ -2,7 +2,7 @@
 
 PocketSDR-AFS is an enhanced version of Tomoji Takasu’s [PocketSDR v0.13](https://github.com/tomojitakasu/PocketSDR) designed to support the Augmented Forward Signal (AFS) for the Lunar Augmented Navigation Service (LANS).
 
-LANS is the lunar counterpart to GNSS, developed to enable precise navigation and positioning for future lunar exploration missions. The AFS is a standardized signal structure for LANS. The recommended standard for AFS can be found at NASA's [LunaNet Interoperability Specification](https://www.nasa.gov/lunanet) site.
+LANS is the lunar counterpart to GNSS, developed to enable precise navigation and positioning for future lunar exploration missions. The AFS is a standardized signal structure for LANS. The recommended standard for AFS can be found at NASA's [LunaNet Interoperability Specification](https://www.nasa.gov/directorates/somd/space-communications-navigation-program/lunanet-interoperability-specification/) site.
 
 PocketSDR-AFS, in conjunction with a software-defined LANS AFS baseband simulator such as [LANS-AFS-SIM](https://github.com/osqzss/LANS-AFS-SIM), offers a flexible platform for validating LANS signal processing algorithms and evaluating lunar navigation performance.
 
