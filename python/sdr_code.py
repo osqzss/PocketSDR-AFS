@@ -101,6 +101,8 @@ I1SP       = {}
 I1SPO      = {}
 I5S        = {}
 ISS        = {}
+# INGM: 20250514 LANS AFS code caches
+AFSD, AFSP, AFSPT = {}, {}, {}
 
 L1CA_G1, L1CA_G2 = [], []
 L1C_L_SEQ = []
@@ -111,6 +113,8 @@ B2AD_G1, B2AP_G1 = [], []
 B2A_L_SEQ = []
 B2BI_G1 = []
 B3I_G1 = []
+# INGM: 20250514 LANS AFS data channel Gold codes
+AFSD_G1, AFSD_G2 = [], []
 
 # code tables ------------------------------------------------------------------
 L1CA_G2_delay = ( # PRN 1 - 210
@@ -207,7 +211,7 @@ L1CD_ins_idx = ( # PRN 1 - 210
      549,  368, 6300, 5658, 4302,  851, 4353, 9618, 9652, 1232,  109,10174,
     6178, 1851, 1299,  325,10206, 9968,10191, 5438,10080,  219,  758, 2140,
     9753, 4799,10126,  241, 1245, 1274, 1456, 9967,  235,  512, 1078, 1078,
-     953, 5647,  669, 1311, 5827,   15) 
+     953, 5647,  669, 1311, 5827,   15)
 
 L1CO_S1_poly = ( # PRN 1 - 210
     0o5111, 0o5421, 0o5501, 0o5403, 0o6417, 0o6141, 0o6351, 0o6501, 0o6205,
@@ -278,7 +282,7 @@ L1CO_S2_init = ( # 64 - 210
     0o3010, 0o2245, 0o2051, 0o2144, 0o1743, 0o2511, 0o3410, 0o1414, 0o1275,
     0o2257, 0o2331, 0o0276, 0o3261, 0o1760, 0o0430, 0o3477, 0o1676, 0o1636,
     0o2411, 0o1473, 0o2266, 0o2104, 0o2070, 0o1766, 0o0711, 0o2533, 0o0353,
-    0o1744, 0o0053, 0o2222) 
+    0o1744, 0o0053, 0o2222)
 
 L2CM_R_init_1 = ( # PRN 1 - 63
     0o742417664, 0o756014035, 0o002747144, 0o066265724, 0o601403471,
@@ -627,7 +631,7 @@ I1SPO_R1_init = ( # PRN 1 - 14
 
 NH10 = ( # 10 bits Neuman-Hoffman code
     -1, -1, -1, -1, 1, 1, -1, 1, -1, 1)
- 
+
 NH20 = ( # 20 bits Neuman-Hoffman code
    -1, -1, -1, -1, -1, 1, -1, -1, 1, 1, -1, 1, -1, 1, -1, -1, 1, 1, 1, -1)
 
@@ -643,6 +647,31 @@ G2OCP_OC2 = ( # GLONASS L2OCP OC2
    -1, 1, -1, -1, -1, 1, -1)
 
 BOC = (-1, 1) # BOC(k,k) sub-carrier
+
+# INGM: 20250514 LANS AFS data channel G2 delay
+AFSD_G2_delay = ( # PRN 1 - 210
+    1845, 1071,  170, 2035, 1214, 1292, 1284, 1894, 1537,  735,
+     561, 1789, 1453,  196, 1040,  326, 1787,  982, 1030, 1380,
+    1932, 1188,  390,  714,  303, 1001,  707, 1984,  139,  182,
+    1891, 1247, 1434, 2000, 1843,  865,  616,  514,  449, 1173,
+      24, 1383, 1940, 1594, 1765,  752,  145, 1615, 1666, 1372,
+    1634, 1068, 1181,  879, 1153, 1621,  927, 1848,  402,  413,
+    1090,  657,  609, 1547,  370,  271, 1353,  635,  299,  697,
+     152,  678, 1329,   15, 1974, 1884, 1868,  277,  302,    9,
+     603, 1583,  848, 1234, 1568,  510, 1303, 1921,  823, 1187,
+    1299,  824,  672, 2034, 1388,   13,  223, 1840, 1161, 1132,
+     365,    2,  924, 1373,  959,  220, 1542,  188,  264,  453,
+      68,  715,   75, 1095,  938, 1316,  394, 1156,  166,  969,
+     269,  179,  957,  400,  625, 1513, 1796,  100, 1660, 1454,
+    1613, 1064,  844,  518,  320,  661, 2031,  694, 1143, 1167,
+    1885,  833, 1601,  903,  399, 1896,  899,  133,  556,  331,
+     198,  212, 1024, 1070, 1972, 1573,  884, 1177, 1691,  533,
+     480,  751,  447,  734,  973,  857, 1767, 1548, 1876,  614,
+    1017, 1978,  275, 1141, 1252, 1952, 1714, 1067,  557,  522,
+    1159,  545, 1580,  610,  935, 1134,  780,  691, 1038, 1418,
+     295,  916, 1654,  624,  706, 1033, 1633,  790, 1451, 1300,
+     459,  106,  861, 1541,  114, 1381, 1945, 1069,  242,  356
+)
 
 #-------------------------------------------------------------------------------
 #  Generate primary code.
@@ -741,6 +770,11 @@ def gen_code(sig, prn):
         return gen_code_I5S(prn)
     elif sig == 'ISS':
         return gen_code_ISS(prn)
+    # INGM: 20250514 LANS AFS generate primary code
+    elif sig == 'AFSD':
+        return gen_code_AFSD(prn)
+    elif sig == 'AFSP':
+        return gen_code_AFSP(prn)
     else:
         return NONE
 
@@ -756,8 +790,9 @@ def gen_code(sig, prn):
 #
 def sec_code(sig, prn):
     sig = sig.upper()
+    # INGM: 20250516 LANS AFS secondary code
     if sig in ('L1CA', 'L1S', 'L1CB','L1CD', 'L2CM', 'L2CL', 'L6D', 'L6E',
-       'G1OCP', 'E1B', 'E6B', 'B1CD', 'B2BI', 'I1SD', 'I5S', 'ISS'):
+       'G1OCP', 'E1B', 'E6B', 'B1CD', 'B2BI', 'I1SD', 'I5S', 'ISS', 'AFSD'):
         return np.array([1], dtype='int8') # no secondary code
     elif sig == 'L1CP':
         return sec_code_L1CP(prn)
@@ -817,6 +852,34 @@ def sec_code(sig, prn):
         return sec_code_B3I(prn)
     elif sig == 'I1SP':
         return sec_code_I1SP(prn)
+    # INGM: 20250516 LANS AFS secondary code
+    elif sig == 'AFSP':
+        return sec_code_AFSP(prn)
+    else:
+        return NONE
+
+# INGM: 20250514 LANS AFS generate tertiary code
+#-------------------------------------------------------------------------------
+#  Generate Tertiary code.
+#
+#  args:
+#      sig      (I) Signal type as string ('AFSP')
+#      prn      (I) PRN number
+#
+#  returns:
+#      code     Tertiary code as int8 ndarray (-1 or 1)
+#
+def ter_code(sig, prn):
+    sig = sig.upper()
+    if sig in ('L1CA', 'L1S', 'L1CB', 'L1CP', 'L1CD', 'L2CM', 'L2CL',
+                'L5I', 'L5Q', 'L5SI', 'L5SIV', 'L5SQ', 'L5SQV', 'L6D', 'L6E',
+                'G1CA', 'G2CA', 'G1OCD', 'G1OCP', 'G2OCP', 'G3OCD', 'G3OCP',
+                'E1B', 'E1C', 'E5AI', 'E5AQ', 'E5BI', 'E5BQ', 'E6B', 'E6C',
+                'B1I', 'B1CD', 'B1CP', 'B2I', 'B2AD', 'B2AP', 'B2BI', 'B3I',
+                'I1SD', 'I1SP', 'I5S', 'ISS', 'AFSD'):
+        return np.array([1], dtype='int8') # no tertiary code
+    elif sig == 'AFSP':
+        return ter_code_AFSP(prn)
     else:
         return NONE
 
@@ -888,6 +951,9 @@ def code_cyc(sig):
         return 20e-3
     elif sig == 'L2CL':
         return 1500e-3
+    # INGM: 20250514 LANS AFS code cycle
+    elif sig in ('AFSD', 'AFSP'):
+        return 2e-3
     else:
         return 0.0
 
@@ -918,6 +984,11 @@ def code_len(sig):
         return 511
     elif sig in ('B1I', 'B2I'):
         return 2046
+    # INGM: 20250514 LANS AFS code length
+    elif sig == 'AFSD':
+        return 2046
+    elif sig == 'AFSP':
+        return 10230
     else:
         return 0
 
@@ -960,6 +1031,10 @@ def sig_freq(sig):
         return 1202.025e6
     elif sig == 'ISS':
         return 2492.028e6
+    # INGM: 20250514 LANS AFS signal carrier frequency
+    elif sig in ('AFSD', 'AFSP'):
+        #return 2492.028e6
+        return 1575.42e6 # for DEMO_L1
     else:
         return 0.0
 
@@ -999,13 +1074,17 @@ def sat_id(sig, prn):
     elif sig[0] == 'I':
         if prn < 1 or prn > 14: return '???'
         return 'I%02d' % (prn)
+    # INGM: 20250514 LANS AFS satellite ID
+    elif sig[0] == 'A':
+        if prn < 1 or prn > 14: return '???'
+        return 'L%02d' % (prn)
     return '???'
 
 # get satellite ID for QZSS ([3],[4],[15]) -------------------------------------
 def sat_id_qzss(sig, prn):
     sat_L1B = (4, 5, 8, 9)
     sat_L5S = (2, 4, 5, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 8)
-    
+
     if sig == 'L1CB' and prn >= 203 and prn <= 206 and sat_L1B[prn-203]:
         sat = 'J%02d' % (sat_L1B[prn-203])
     elif (sig == 'L1CA' or sig == 'L1CD' or sig == 'L1CP' or sig == 'L2CM'
@@ -1830,6 +1909,57 @@ def gen_code_ISS(prn):
         ISS_G2 = LFSR(N, rev_reg(ISS_G2_init[prn-1], 10), 0b0110010111, 10)
         ISS[prn] = -ISS_G1 * ISS_G2
     return ISS[prn]
+
+# INGM: 20250514 generate LANS code
+# generate AFSD code
+def gen_code_AFSD(prn):
+    if prn < 1 or prn > 210:
+        return NONE
+    N_gen = 2047
+    N_act = 2046
+    global AFSD, AFSD_G1, AFSD_G2, AFSD_G2_delay
+
+    if prn not in AFSD:
+        if len(AFSD_G1) != N_gen:
+            AFSD_G1 = gen_code_AFSD_G1(N_gen)
+            AFSD_G2 = gen_code_AFSD_G2(N_gen)
+        delay = AFSD_G2_delay[prn-1]
+        idx = (np.arange(N_act) + N_gen - delay) % N_gen
+        AFSD[prn] = -AFSD_G1[:N_act] * AFSD_G2[idx]
+    return AFSD[prn]
+
+# generate AFSD G1 code
+def gen_code_AFSD_G1(N):
+    return LFSR(N, 0x7FF, 0x201, 11)
+
+# generate AFSD G2 code
+def gen_code_AFSD_G2(N):
+    return LFSR(N, 0x7FF, 0x249, 11)
+
+# generate AFSP code
+def gen_code_AFSP(prn):
+    if prn < 1 or prn > 210:
+        return NONE
+    N = 10230
+    if prn not in AFSP:
+        code = gen_code_L1CPD(N, L1CP_weil_idx[prn-1], L1CP_ins_idx[prn-1])
+        AFSP[prn] = code
+    return AFSP[prn]
+
+# generate AFSP secondary code
+def sec_code_AFSP(prn):
+    code = [[1, 1, 1, -1], [-1, 1, 1, 1], [1, -1, 1, 1], [1, 1, -1, 1]]
+    if prn < 1 or prn > 12:
+        return NONE
+    N = 4
+    return code[(prn-1) % 4]
+
+# generate AFSP tertiary code
+def ter_code_AFSP(prn):
+    if prn < 1 or prn > 12:
+        return NONE
+    N = 1500
+    return AFSPT[prn-1]
 
 # modulation of code by sub-carrier --------------------------------------------
 def mod_code(code, sub_carr):

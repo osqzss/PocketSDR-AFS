@@ -30,18 +30,20 @@ ESC_RES = '\033[0m'  # ANSI escape reset
 ESC_UCUR = '\033[A'  # ANSI escape cursor up
 
 # read IF data -----------------------------------------------------------------
-def read_data(fp, N, IQ, buff, ix):
+def read_data(fp, N, IQ, buff, ix, qsign):
     if fp == None:
         raw = np.frombuffer(sys.stdin.buffer.read(N * IQ), dtype='int8')
     else:
         raw = np.frombuffer(fp.read(N * IQ), dtype='int8')
-    
+
     if len(raw) < N * IQ:
         return False
     elif IQ == 1: # I
         buff[ix:ix+N] = np.array(raw, dtype='complex64')
     else: # IQ (Q sign inverted in MAX2771)
-        buff[ix:ix+N] = np.array(raw[0::2] - raw[1::2] * 1j, dtype='complex64')
+        # INGM: 20250514 Inverted Q sign for MAX2771
+        # buff[ix:ix+N] = np.array(raw[0::2] - raw[1::2] * 1j, dtype='complex64')
+        buff[ix:ix+N] = np.array(raw[0::2] + qsign * raw[1::2] * 1j, dtype='complex64')
     return True
 
 # print receiver channel status header -----------------------------------------
@@ -95,28 +97,28 @@ def cn0_bar(cn0):
 # show usage -------------------------------------------------------------------
 def show_usage():
     print('Usage: pocket_trk.py [-sig sig -prn prn[,...] ...] [-p] [-e] [-toff toff]')
-    print('       [-f freq] [-fi freq] [-IQ] [-ti tint] [-ts tspan] [-yl ylim]')
+    print('       [-f freq] [-fi freq] [-IQ] [-InQ] [-ti tint] [-ts tspan] [-yl ylim]')
     print('       [-log path] [-q] [file]')
     exit()
 
 #-------------------------------------------------------------------------------
 #
 #   Synopsis
-# 
+#
 #     pocket_trk.py [-sig sig -prn prn[,...] ...] [-p] [-e] [-toff toff]
 #         [-f freq] [-fi freq] [-IQ] [-ti tint] [-ts tspan] [-yl ylim]
 #         [-log path] [-q] [file]
-# 
+#
 #   Description
-# 
+#
 #     It tracks GNSS signals in digital IF data and decode navigation data in
 #     the signals.
 #     If single PRN number by -prn option, it plots correlation power and
 #     correlation shape of the specified GNSS signal. If multiple PRN numbers
 #     specified by -prn option, it plots C/N0 for each PRN.
-# 
+#
 #   Options ([]: default)
-#  
+#
 #     -sig sig -prn prn[,...] ...
 #         A GNSS signal type ID (L1CA, L2CM, ...) and a PRN number list of the
 #         signal. For signal type IDs, refer pocket_acq.py manual. The PRN
@@ -125,7 +127,7 @@ def show_usage():
 #         GLONASS FDMA signals (G1CA, G2CA), the PRN number is treated as the
 #         FCN (frequency channel number). The pair of a signal type ID and a PRN
 #         number list can be repeated for multiple GNSS signals to be tracked.
-# 
+#
 #     -p
 #         Plot signal tracking status in an integrated window. The window shows
 #         correlation envelope, correlation I-Q plot, correlation I/Q to time
@@ -138,10 +140,10 @@ def show_usage():
 #
 #     -3d
 #         3D Plot of correlation shapes. [no]
-# 
+#
 #     -toff toff
 #         Time offset from the start of digital IF data in s. [0.0]
-# 
+#
 #     -f freq
 #         Sampling frequency of digital IF data in MHz. [12.0]
 #
@@ -190,7 +192,10 @@ if __name__ == '__main__':
     ch = {}
     file, log_file, log_lvl, quiet = '', '', 4, 0
     fig = None
-    
+
+    # INGM: 20250514 Set Q sign flag
+    inv_q = False
+
     i = 1
     while i < len(sys.argv):
         if sys.argv[i] == '-sig':
@@ -232,17 +237,20 @@ if __name__ == '__main__':
             log_file = sys.argv[i]
         elif sys.argv[i] == '-q':
             quiet = 1
+        # INGM: 20250514 Set inverse Q sign flag for MAX2771
+        elif sys.argv[i] == '-InQ':
+            inv_q = True
         elif sys.argv[i][0] == '-':
             show_usage()
         else:
             file = sys.argv[i];
         i += 1
-    
+
     T = sdr_code.code_cyc(sig) # code cycle
     if T <= 0.0:
         print('Invalid signal %s.' % (sig))
         exit()
-    
+
     IQ = 1 if IQ == 1 and fi > 0.0 else 2
     if file == '':
         fp = None
@@ -253,19 +261,19 @@ if __name__ == '__main__':
         except:
             print('file open error: %s' % (file))
             exit()
-    
+
     for i in range(len(prns)):
         ncorr = NCORR_PLOT if plot and i == 0 else 0
         ch[i] = sdr_ch.ch_new(sigs[i], prns[i], fs, fi, add_corr=ncorr)
         ch[i].state = 'SRCH'
-    
+
     if plot:
         fig = sdr_ch_plot.init(env, p3d, toff, tspan, ylim)
-    
+
     if log_file != '':
         log_open(log_file)
         log_level(log_lvl)
-    
+
     N = int(T * fs)
     buff = np.zeros(N * (MAX_BUFF + 1), dtype='complex64')
     ix = 0
@@ -273,24 +281,26 @@ if __name__ == '__main__':
     tt = time.time()
     log(3, '$LOG,%.3f,%s,%d,START FILE=%s FS=%.3f FI=%.3f IQ=%d TOFF=%.3f' %
         (0.0, '', 0, file, fs * 1e-6, fi * 1e-6, IQ, toff))
-    
+
     try:
         for i in range(0, 1000000000):
             time_rcv = toff + T * (i - 1) # receiver time
-            
+
             # read IF data to buffer
-            if not read_data(fp, N, IQ, buff, N * (i % MAX_BUFF)):
+            # INGM: 20250514 Read data with inverse Q sign
+            # if not read_data(fp, N, IQ, buff, N * (i % MAX_BUFF)):
+            if not read_data(fp, N, IQ, buff, N * (i % MAX_BUFF), -1 if inv_q else 1):
                 break;
-            
+
             if i == 0:
                 continue
             elif i % MAX_BUFF == 0:
                 buff[-N:] = buff[:N]
-            
+
             # update receiver channel
             for j in range(len(ch)):
                 sdr_ch.ch_update(ch[j], time_rcv, buff, N * ((i - 1) % MAX_BUFF))
-            
+
             # update receiver channel state
             if i % int(CYC_SRCH / T) == 0:
                 for j in range(len(ch)):
@@ -298,27 +308,27 @@ if __name__ == '__main__':
                     if ch[ix].state == 'IDLE':
                         ch[ix].state = 'SRCH'
                         break
-            
+
             # update log
             if int(time_rcv * 1000) % 1000 == 0:
                 t = datetime.datetime.now(datetime.timezone.utc)
                 log(3, '$TIME,%.3f,%d,%d,%d,%d,%d,%.6f,UTC' % (time_rcv, t.year,
                     t.month, t.day, t.hour, t.minute, t.second + t.microsecond
                     * 1e-6))
-            
+
             if (i - 1) % int(tint / T) != 0:
                 continue
-            
+
             # update receiver channel status
             if not quiet:
                 nrow = update_stat(prns, ch, nrow)
-            
+
             # update plots
             if fig:
                 sdr_ch_plot.update(fig, ch[0])
                 sdr_ch_plot.title(fig, 'SIG = %s, PRN = %3d, FILE = %s, T = %7.2f s' % (
                     ch[0].sig, ch[0].prn, file, ch[0].time))
-            
+
             for j in range(len(prns)):
                 if ch[j].state != 'LOCK':
                     continue
@@ -326,20 +336,20 @@ if __name__ == '__main__':
                     (ch[j].time, ch[j].sig, ch[j].prn, ch[j].lock, ch[j].cn0,
                     ch[j].coff * 1e3, ch[j].fd, ch[j].adr, ch[j].nav.count[0],
                     ch[j].nav.count[1]))
-        
+
     except KeyboardInterrupt:
         pass
-        
+
     tt = time.time() - tt
     log(3, '$LOG,%.3f,%s,%d,END FILE=%s' % (tt, '', 0, file))
     if not quiet:
         print('  TIME(s) = %.3f' % (tt))
-    
+
     if fp != None:
         fp.close()
-    
+
     if log_file != '':
         log_close()
-    
+
     if fig:
         sdr_ch_plot.update(fig)

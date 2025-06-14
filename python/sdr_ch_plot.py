@@ -160,7 +160,9 @@ def draw_IQ(fig, rect, opt):
 def update_IQ(ax, ch, opt):
     N = np.min([int(opt[3] / ch.T), len(ch.trk.P)])
     ax.lines[0].set_data(ch.trk.P[-N:].real, ch.trk.P[-N:].imag)
-    ax.lines[1].set_data(ch.trk.P[-1].real, ch.trk.P[-1].imag)
+    # INGM: 20250515 Bug fix
+    # ax.lines[1].set_data(ch.trk.P[-1].real, ch.trk.P[-1].imag)
+    ax.lines[1].set_data([ch.trk.P[-1].real], [ch.trk.P[-1].imag])
     ax.texts[1].set_text('IP=%6.3f\nQP=%6.3f' % (ch.trk.P[-1].real, ch.trk.P[-1].imag))
     draw_axis(ax)
 
@@ -192,8 +194,11 @@ def update_time(ax, ch, opt):
     ax.set_xlim(t0, t0 + N * ch.T * 1.008)
     ax.lines[0].set_data(time, P.imag)
     ax.lines[1].set_data(time, P.real)
-    ax.lines[2].set_data(ch.time, P[-1].imag)
-    ax.lines[3].set_data(ch.time, P[-1].real)
+    # INGM: 20250515 Bug fix
+    # ax.lines[2].set_data(ch.time, P[-1].imag)
+    ax.lines[2].set_data([ch.time], [P[-1].imag])
+    # ax.lines[3].set_data(ch.time, P[-1].real)
+    ax.lines[3].set_data([ch.time], [P[-1].real])
     ax.lines[4].set_data(ch.nav.tsyms, np.zeros(len(ch.nav.tsyms))) # for debug
     txt1, txt2 = ch_status(ch)
     ax.texts[3].set_text(txt1)
