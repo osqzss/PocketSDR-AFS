@@ -71,7 +71,7 @@ sudo ./pocket_trk.sh
 
 ## References
 
-For additional details on the architecture and examples of off-line and real-time test results, please refer to our publication:
+For additional details on the architecture and examples of offline and real-time test results, please refer to our publication:
 
 Sobukawa, R., & Ebinuma, T. (2025). Open-Source Real-Time SDR Platform for Rapid Prototyping of LANS AFS Receiver. Aerospace, 12(7), 620. [https://doi.org/10.3390/aerospace12070620](https://www.mdpi.com/2226-4310/12/7/620)
 
