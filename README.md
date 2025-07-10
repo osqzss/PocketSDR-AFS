@@ -68,3 +68,11 @@ sudo ./pocket_trk.sh
 
 - For development and testing purposes, the center frequency of the LANS AFS is set to 1575.42MHz. While the actual LANS AFS is transmitted in the S-band, this L-band configuration enables compatibility with the FE2CH frontend device, facilitating convenient real-time testing on desktop PCs or Raspberry Pi devices.
 - To configure the receiver for S-band signal acquisition, edit the `src/pocket_sdr.h` file and comment out the `#define DEMO_L1` directive. This modification enables support for the S-band center frequency used by the actual LANS AFS broadcast.
+
+## References
+
+For additional details on the architecture and examples of off-line and real-time test results, please refer to our publication:
+
+Sobukawa, R., & Ebinuma, T. (2025). Open-Source Real-Time SDR Platform for Rapid Prototyping of LANS AFS Receiver. Aerospace, 12(7), 620. https://doi.org/10.3390/aerospace12070620
+
+
