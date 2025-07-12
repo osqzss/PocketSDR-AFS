@@ -55,7 +55,7 @@ The `pocket_trk.sh` script in `app/pocket_trk` provides example command-line ins
 ### Offline Testing Example
 
 ```sh
-sudo ./pocket_trk.sh afssim_ip2.bin
+sudo ./pocket_trk.sh afssim_iq2.bin
 ```
 
 ### Real-time Testing Example (with FE2CH frontend)
