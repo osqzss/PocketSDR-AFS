@@ -1,0 +1,10 @@
+*.o
+*.so
+*.a
+*.bin
+*.exe
+app/pocket_trk/fftw_wisdom
+app/pocket_trk/log.txt
+app/pocket_trk/pocket_trk
+lib/LDPC-codes/
+lib/libfec/
