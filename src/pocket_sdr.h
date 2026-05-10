@@ -36,7 +36,7 @@
 #include <libusb-1.0/libusb.h>
 #endif // WIN32
 
-#define DEMO_L1
+//#define DEMO_L1
 
 #ifdef __cplusplus
 extern "C" {
