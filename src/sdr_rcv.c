@@ -63,7 +63,9 @@ static void cn0_bar(float cn0, char *bar)
 // SDR receiver channel sync status --------------------------------------------
 static void sync_stat(sdr_ch_t *ch, char *stat)
 {
-    sprintf(stat, "%s%s%s%s", (ch->trk->sec_sync > 0) ? "S" : "-",
+    // TEB: "T" for tertiary code sync (includes secondary code sync)
+    sprintf(stat, "%s%s%s%s", (ch->trk->ter_sync > 0) ? "T" :
+        ((ch->trk->sec_sync > 0) ? "S" : "-"),
         (ch->nav->ssync > 0) ? "B" : "-", (ch->nav->fsync > 0) ? "F" : "-",
         (ch->nav->rev) ? "R" : "-");
 }
