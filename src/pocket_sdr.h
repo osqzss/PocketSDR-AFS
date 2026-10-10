@@ -140,6 +140,12 @@ typedef struct {                // signal tracking type
     sdr_cpx_t P[SDR_N_HIST];    // history of P correlations 
     int sec_sync;               // secondary code sync status 
     int sec_pol;                // secondary code polarity 
+    int ter_sync;               // tertiary code sync status (0: no-sync,
+                                // >0: lock count at tertiary code start)
+    int ter_pol;                // tertiary code polarity
+    int ter_err;                // tertiary symbol error count
+    int ter_nsym;               // number of tertiary symbols for sync
+    float *ter_syms;            // tertiary symbols for tertiary code sync
     double err_phas;            // phase error (cyc) 
     double err_code;            // code error (chip) 
     double sumP, sumE, sumL, sumN; // sum of correlations 
@@ -169,7 +175,8 @@ typedef struct {                // SDR receiver channel type
     int prn;                    // PRN number 
     const int8_t *code;         // primary code 
     const int8_t *sec_code;     // secondary code
-    int len_code, len_sec_code;
+    const int8_t *ter_code;     // tertiary code
+    int len_code, len_sec_code, len_ter_code;
     double fc;                  // carrier frequency (Hz) 
     double fs;                  // sampling rate (sps) 
     double fi;                  // IF freqency (Hz) 
@@ -329,6 +336,7 @@ int sdr_gen_fftw_wisdom(const char *file, int N);
 // sdr_code.c
 int8_t *sdr_gen_code(const char *sig, int prn, int *N);
 int8_t *sdr_sec_code(const char *sig, int prn, int *N);
+int8_t *sdr_ter_code(const char *sig, int prn, int *N);
 double sdr_code_cyc(const char *sig);
 int sdr_code_len(const char *sig);
 double sdr_sig_freq(const char *sig);

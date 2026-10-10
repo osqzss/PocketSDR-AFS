@@ -1,0 +1,43 @@
+# Object files
+*.o
+
+# External library source trees (cloned by lib/clone_lib.sh)
+/lib/libfec/
+/lib/LDPC-codes/
+
+# Libraries built in lib/build
+/lib/build/*.a
+/lib/build/*.so
+/lib/build/*.dylib
+
+# Installed libraries (lib/win32 libraries are tracked and not ignored)
+/lib/linux/*
+!/lib/linux/.gitkeep
+/lib/macos/*
+!/lib/macos/.gitkeep
+
+# Application executables
+/app/pocket_acq/pocket_acq
+/app/pocket_conf/pocket_conf
+/app/pocket_dump/pocket_dump
+/app/pocket_scan/pocket_scan
+/app/pocket_snap/pocket_snap
+/app/pocket_trk/pocket_trk
+/app/pocket_trk/fftw_wisdom
+/app/*/*.exe
+/app/*/*.stackdump
+
+# Installed executables
+/bin/*
+!/bin/.gitkeep
+
+# Receiver output logs (e.g. pocket_trk.sh -log log.txt)
+/app/*/log.txt
+
+# Tertiary code sample program
+/tertiary/tertiary_code
+/tertiary/*.exe
+
+# Python cache
+__pycache__/
+*.pyc

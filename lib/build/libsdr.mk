@@ -38,7 +38,7 @@ endif
 #CFLAGS = -Ofast -march=native $(INCLUDE) $(OPTIONS) -Wall -fPIC -g
 CFLAGS = -Ofast $(INCLUDE) $(OPTIONS) -Wall -fPIC -g
 
-OBJ = sdr_cmn.o sdr_func.o sdr_code.o sdr_code_gal.o sdr_ch.o \
+OBJ = sdr_cmn.o sdr_func.o sdr_code.o sdr_code_gal.o sdr_code_afs.o sdr_ch.o \
       sdr_nav.o sdr_pvt.o sdr_pvt_afs.o sdr_rcv.o sdr_fec.o sdr_ldpc.o sdr_ldpc_afs.o sdr_nb_ldpc.o \
       sdr_usb.o sdr_dev.o sdr_conf.o
 
@@ -63,6 +63,9 @@ sdr_code.o : $(SRC)/sdr_code.c
 
 sdr_code_gal.o : $(SRC)/sdr_code_gal.c
 	$(CC) -c $(CFLAGS) $(SRC)/sdr_code_gal.c
+
+sdr_code_afs.o : $(SRC)/sdr_code_afs.c
+	$(CC) -c $(CFLAGS) $(SRC)/sdr_code_afs.c
 
 sdr_ch.o   : $(SRC)/sdr_ch.c
 	$(CC) -c $(CFLAGS) $(SRC)/sdr_ch.c
