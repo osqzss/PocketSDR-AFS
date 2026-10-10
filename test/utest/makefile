@@ -34,7 +34,7 @@ TARGET = sdr_func_c_test
 
 all: $(TARGET)
 
-sdr_func_c_test: sdr_cmn.o sdr_func.o sdr_code.o sdr_code_gal.o
+sdr_func_c_test: sdr_cmn.o sdr_func.o sdr_code.o sdr_code_gal.o sdr_code_afs.o
 
 sdr_cmn.o: $(SRC)/sdr_cmn.c
 	$(CC) -c $(CFLAGS) $(SRC)/sdr_cmn.c
@@ -44,6 +44,8 @@ sdr_code.o: $(SRC)/sdr_code.c
 	$(CC) -c $(CFLAGS) $(SRC)/sdr_code.c
 sdr_code_gal.o: $(SRC)/sdr_code_gal.c
 	$(CC) -c $(CFLAGS) $(SRC)/sdr_code_gal.c
+sdr_code_afs.o: $(SRC)/sdr_code_afs.c
+	$(CC) -c $(CFLAGS) $(SRC)/sdr_code_afs.c
 
 sdr_func_c_test.o: $(SRC)/pocket_sdr.h
 sdr_cmn.o   : $(SRC)/pocket_sdr.h

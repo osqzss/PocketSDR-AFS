@@ -79,6 +79,9 @@ extern const char *code_gal_CS20;
 extern const char *code_gal_CS25;
 extern const char *code_gal_CS100[];
 
+// TEB: LANS AFS-Q tertiary code HEX strings in sdr_code_afs.c -----------------
+extern const char *code_afs_ter[];
+
 // constants ------------------------------------------------------------------
 static const int8_t CHIP[] = {-1, 1};
 
@@ -2106,14 +2109,17 @@ static int8_t *sec_code_AFSP(int prn, int *N)
     return code[(prn-1) % 4];
 }
 
+// generate AFS pilot channel tertiary code ------------------------------------
 static int8_t *ter_code_AFSP(int prn, int *N)
 {
-    if (prn < 1 || prn > 12) {
+    if (prn < 1 || prn > 210) {
         return NULL;
     }
     *N = 1500;
-
-    return(AFSPT[prn-1]);
+    if (!AFSPT[prn-1]) {
+        AFSPT[prn-1] = read_code_hex(code_afs_ter[prn-1], *N);
+    }
+    return AFSPT[prn-1];
 }
 
 // generate primary code -------------------------------------------------------
@@ -2416,6 +2422,43 @@ int8_t *sdr_sec_code(const char *sig, int prn, int *N)
     
     pthread_mutex_lock(&mtx);
     int8_t *code = sec_code(sig, prn, N);
+    pthread_mutex_unlock(&mtx);
+    
+    return code;
+}
+
+// TEB: generate tertiary code ------------------------------------------------
+static int8_t *ter_code(const char *sig, int prn, int *N)
+{
+    static int8_t code[] = {1};
+    char Sig[16];
+    
+    sig_upper(sig, Sig);
+    
+    if (!strcmp(Sig, "AFSP")) {
+        return ter_code_AFSP(prn, N);
+    }
+    *N = 1; // no tertiary code
+    return code;
+}
+
+//------------------------------------------------------------------------------
+//  Generate tertiary code.
+//
+//  args:
+//      sig      (I) Signal type as string ('L1CA', 'L1CB', 'AFSP', ....)
+//      prn      (I) PRN number
+//      N        (O) Length of tertiary code (1: no tertiary code)
+//
+//  return:
+//      Tertiary code as int8_t array (-1 or 1) (NULL: error)
+//
+int8_t *sdr_ter_code(const char *sig, int prn, int *N)
+{
+    static pthread_mutex_t mtx = PTHREAD_MUTEX_INITIALIZER;
+    
+    pthread_mutex_lock(&mtx);
+    int8_t *code = ter_code(sig, prn, N);
     pthread_mutex_unlock(&mtx);
     
     return code;
